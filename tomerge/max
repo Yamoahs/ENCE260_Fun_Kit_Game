@@ -1,0 +1,9 @@
+(ticks == (MAX_TICKS - (butt_press * SCALE_FACTOR)))
+
+#define START_ROW 6
+#define START_COL 2
+#define STARTING_SPEED 100
+#define MAX_BUTTS 11
+//#define FACTOR 0.88
+#define MAX_TICKS 150
+#define SCALE_FACTOR 10
