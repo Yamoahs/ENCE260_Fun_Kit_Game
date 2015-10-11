@@ -112,11 +112,11 @@ int main (void)
     {
       pacer_wait();
       nav_move(&current_column);
-
+      // get input
       if (!firing && (navswitch_push_event_p (NAVSWITCH_PUSH) || navswitch_push_event_p (NAVSWITCH_NORTH))) {
         fireNav(&firing, &firing_column, &butt_press, &current_column);
       }
-
+      // fire projectile
       if (firing) {
         fireProj(&ticks, &butt_press, &firing_row, &firing_column, &firing);
       }
@@ -124,7 +124,9 @@ int main (void)
       display_pixel_set (current_column, START_ROW, 1);
       display_update();
 
+      // if at end, send ir
 
+      // wait for input loop
 
       //counter += 1
     }
