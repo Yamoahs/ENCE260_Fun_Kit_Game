@@ -74,15 +74,17 @@ uint8_t fireProj(uint8_t* ticks, uint8_t* butt_press, int8_t* firing_row, uint8_
 
 uint8_t fireReceived(uint8_t* ticks, uint8_t* butt_press, int8_t* firing_row, uint8_t* firing_column, uint8_t* falling)
 {
+  uint8_t inverted_column = *firing_column;
+  inverted_column = ((LEDMAT_COLS_NUM -1) - *firing_column);
   if (*ticks == (MAX_TICKS - (*butt_press * FACTOR))) {
     *ticks = 0;
     if (*firing_row == 0) {
-      display_pixel_set (*firing_column, *firing_row, 1);
+      display_pixel_set (inverted_column, *firing_row, 1);
     }
     else {
-      display_pixel_set(*firing_column, *firing_row -1, 0);
+      display_pixel_set(inverted_column, *firing_row -1, 0);
       if (*firing_row < LEDMAT_ROWS_NUM - 1) {
-        display_pixel_set(*firing_column, *firing_row, 1);
+        display_pixel_set(inverted_column, *firing_row, 1);
       }
       else {
         *firing_row = START_ROW - 1;
