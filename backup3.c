@@ -7,9 +7,10 @@
 #define START_ROW 6
 #define START_COL 2
 #define STARTING_SPEED 100
-#define MAX_BUTTS 10
+#define MAX_BUTTS 8
 #define MAX_TICKS 150
 #define FACTOR 10
+
 
 void nav_move (uint8_t* current_column)
 {
@@ -33,32 +34,9 @@ void nav_move (uint8_t* current_column)
   }
 }
 
-void shoot (uint8_t* current_column) {
-  //shooter code
-  if (navswitch_push_event_p (NAVSWITCH_PUSH)) {
-    uint8_t i;
-    for (i = 0; i < LEDMAT_ROWS_NUM; i++) {
-      display_pixel_set (*current_column, i, 1);
-    }
-  }
-}
 
-void ledmat (void)
-{
-  pio_config_set(LEDMAT_COL1_PIO, PIO_OUTPUT_HIGH);
-  pio_config_set(LEDMAT_COL2_PIO, PIO_OUTPUT_HIGH);
-  pio_config_set(LEDMAT_COL3_PIO, PIO_OUTPUT_HIGH);
-  pio_config_set(LEDMAT_COL4_PIO, PIO_OUTPUT_HIGH);
-  pio_config_set(LEDMAT_COL5_PIO, PIO_OUTPUT_HIGH);
 
-  pio_config_set(LEDMAT_ROW1_PIO, PIO_OUTPUT_HIGH);
-  pio_config_set(LEDMAT_ROW2_PIO, PIO_OUTPUT_HIGH);
-  pio_config_set(LEDMAT_ROW3_PIO, PIO_OUTPUT_HIGH);
-  pio_config_set(LEDMAT_ROW4_PIO, PIO_OUTPUT_HIGH);
-  pio_config_set(LEDMAT_ROW5_PIO, PIO_OUTPUT_HIGH);
-  pio_config_set(LEDMAT_ROW6_PIO, PIO_OUTPUT_HIGH);
-  pio_config_set(LEDMAT_ROW7_PIO, PIO_OUTPUT_HIGH);
-}
+
 
 void fireNav(uint8_t* firing, uint8_t* firing_column, uint8_t* butt_press, uint8_t* current_column) {
   *firing = 1;
@@ -70,7 +48,7 @@ void fireNav(uint8_t* firing, uint8_t* firing_column, uint8_t* butt_press, uint8
   }
 }
 
-void fireProj(uint8_t* ticks, uint8_t* butt_press, int8_t* firing_row, uint8_t* firing_column, uint8_t* firing) {
+uint8_t fireProj(uint8_t* ticks, uint8_t* butt_press, int8_t* firing_row, uint8_t* firing_column, uint8_t* firing) {
   if (*ticks == (MAX_TICKS - (*butt_press * FACTOR))) {
     *ticks = 0;
     if (*firing_row == (START_ROW - 1)) {
@@ -82,15 +60,45 @@ void fireProj(uint8_t* ticks, uint8_t* butt_press, int8_t* firing_row, uint8_t* 
         display_pixel_set (*firing_column, *firing_row, 1);
       }
       else {
-        *firing_row = START_ROW;
+        *firing_row = 0;
         *firing = 0;
-        *ticks = 255;
+        *ticks = 0;
+        return 1;
       }
     }
     (*firing_row)--;
   }
   (*ticks)++;
+  return 0;
 }
+
+uint8_t fireReceived(uint8_t* ticks, uint8_t* butt_press, int8_t* firing_row, uint8_t* firing_column, uint8_t* falling)
+{
+  uint8_t inverted_column = *firing_column;
+  inverted_column = ((LEDMAT_COLS_NUM -1) - *firing_column);
+  if (*ticks == (MAX_TICKS - (*butt_press * FACTOR))) {
+    *ticks = 0;
+    if (*firing_row == 0) {
+      display_pixel_set (inverted_column, *firing_row, 1);
+    }
+    else {
+      display_pixel_set(inverted_column, *firing_row -1, 0);
+      if (*firing_row < LEDMAT_ROWS_NUM - 1) {
+        display_pixel_set(inverted_column, *firing_row, 1);
+      }
+      else {
+        *firing_row = START_ROW - 1;
+        *falling = 0;
+        *ticks = 0;
+        return 1;
+      }
+    }
+    (*firing_row)++;
+    }
+    (*ticks)++;
+    return 0;
+}
+
 
 int main (void)
 
@@ -98,13 +106,13 @@ int main (void)
     system_init ();
     display_init ();
     navswitch_init ();
-    ledmat();
     pacer_init (600);
     uint8_t current_column = START_COL;
     int8_t firing_row = START_ROW - 1;
     uint8_t firing_column = START_COL;
     uint8_t ticks = 0;
     uint8_t firing = 0;
+    uint8_t falling = 0;
     uint8_t butt_press = 0;
 
 
@@ -112,21 +120,30 @@ int main (void)
     {
       pacer_wait();
       nav_move(&current_column);
-      // get input
-      if (!firing && (navswitch_push_event_p (NAVSWITCH_PUSH) || navswitch_push_event_p (NAVSWITCH_NORTH))) {
+
+      if (!firing && !falling && (navswitch_push_event_p (NAVSWITCH_PUSH) || navswitch_push_event_p (NAVSWITCH_NORTH))) {
         fireNav(&firing, &firing_column, &butt_press, &current_column);
       }
-      // fire projectile
+
       if (firing) {
-        fireProj(&ticks, &butt_press, &firing_row, &firing_column, &firing);
+        if (fireProj(&ticks, &butt_press, &firing_row, &firing_column, &firing)) {
+          falling = 1;
+        }
       }
+
+      if (falling) {
+        if (fireReceived(&ticks, &butt_press, &firing_row, &firing_column, &falling)) {
+          firing = 1;
+        }
+      }
+
+
+
 
       display_pixel_set (current_column, START_ROW, 1);
       display_update();
 
-      // if at end, send ir
 
-      // wait for input loop
 
       //counter += 1
     }
