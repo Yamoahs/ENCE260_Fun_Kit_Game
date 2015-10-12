@@ -7,7 +7,7 @@
 #define START_ROW 6
 #define START_COL 2
 #define STARTING_SPEED 100
-#define MAX_BUTTS 10
+#define MAX_BUTTS 8
 #define MAX_TICKS 150
 #define FACTOR 10
 
