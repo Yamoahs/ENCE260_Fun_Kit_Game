@@ -5,7 +5,7 @@
 
 # Definitions.
 CC = avr-gcc
-CFLAGS = -mmcu=atmega32u2 -Os -Wall -Wstrict-prototypes -Wextra -g -I../../drivers/avr -I../../utils -I../../drivers
+CFLAGS = -mmcu=atmega32u2 -Os -Wall -Wstrict-prototypes -Wextra -g -I../../drivers/avr -I../../utils -I../../drivers -I../../fonts
 OBJCOPY = avr-objcopy
 SIZE = avr-size
 DEL = rm
@@ -40,16 +40,13 @@ display.o: ../../drivers/display.c ../../drivers/avr/system.h ../../drivers/disp
 ledmat.o: ../../drivers/ledmat.c ../../drivers/avr/pio.h ../../drivers/avr/system.h ../../drivers/ledmat.h
 	$(CC) -c $(CFLAGS) $< -o $@
 
-nav.o: nav.c nav.h ../../drivers/avr/system.h ../../drivers/avr/pio.h ../../utils/pacer.h ../../drivers/navswitch.h ../../drivers/display.h
-	$(CC) -c $(CFLAGS) $< -o $@
-
-potato.o: potato.c potato.h ../../drivers/avr/system.h ../../drivers/avr/pio.h ../../utils/pacer.h ../../drivers/navswitch.h ../../drivers/display.h
+tinygl.o: ../../utils/tinygl.c ../../drivers/avr/system.h ../../drivers/display.h ../../utils/font.h ../../utils/tinygl.h
 	$(CC) -c $(CFLAGS) $< -o $@
 
 
 
 # Link: create ELF output file from object files.
-GAME3.out: GAME3.o pio.o system.o timer.o pacer.o navswitch.o display.o ledmat.o nav.o potato.o
+GAME3.out: GAME3.o pio.o system.o timer.o pacer.o navswitch.o display.o ledmat.o tinygl.o
 	$(CC) $(CFLAGS) $^ -o $@ -lm
 	$(SIZE) $@
 
