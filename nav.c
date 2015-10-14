@@ -7,7 +7,6 @@
 
 #include "system.h"
 #include "pio.h"
-#include "pacer.h"
 #include "navswitch.h"
 #include "display.h"
 #include "nav.h"
