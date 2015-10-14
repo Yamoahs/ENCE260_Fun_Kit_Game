@@ -5,7 +5,7 @@
 
 #ifndef DISPLAY_INTERLACE
 #define DISPLAY_INTERLACE 0
-#endif   
+#endif
 
 #if DISPLAY_INTERLACE
 /* With an interlaced display we do not h#include "ir_serial.h"ave odd numbered rows and
@@ -26,13 +26,13 @@ static tossing_t * const tossing = &data;
 
 
 
-void 
+void
 bomb_speed_set (uint8_t bomb_speed)
 {
     tossing->bomb.move_period = tossing->poll_rate / bomb_speed;
 }
 
-void 
+void
 blow_up_speed_set (uint8_t blow_up_speed)
 {
     tossing->blow_up_period = tossing->poll_rate / blow_up_speed;
@@ -52,7 +52,7 @@ tossing_init (uint16_t poll_rate,
              void (*display_handler) (void *data, uint8_t row, uint8_t col,
                                       pix_t type),
              void *display_data)
-{ 
+{
     tossing->size.x = x_size;
     tossing->size.y = y_size;
     tossing->display_hook = display_handler;
@@ -60,7 +60,7 @@ tossing_init (uint16_t poll_rate,
     tossing->active = 0;
     tossing->poll_rate = poll_rate;
 
-    
+
     bomb_num_set (BOMB_NUM_DEFAULT);
     bomb_speed_set (BOMB_SPEED_DEFAULT);
     blow_up_speed_set (CHANCE_SPEED_DEFAULT);
@@ -99,7 +99,7 @@ static bool bomb_move_up (obj_t *bomb)
 
     /* Shells only go straight up.  */
     bomb->pos.y -= BOMB_INC;
-    
+
     if (bomb->pos.y < 0)
         return 1;
 
@@ -115,7 +115,7 @@ static bool bomb_move_down (obj_t *bomb)
     if (bomb->pos.x != tossing->player.x
         || bomb->pos.y != tossing->player.y)
         pixel_set (&bomb->pos, PIX_OFF);
-	
+
 	if (bomb->pos.y == tossing->player.y && bomb->pos.x == tossing->player.x) {
 		tossing->stats.bomb_caught = 1;
 		tossing->player.turn = 1;
@@ -125,12 +125,12 @@ static bool bomb_move_down (obj_t *bomb)
 	}
     /* Shells go straight down.  */
     bomb->pos.y += BOMB_INC;
-    
+
     if (bomb->pos.y > 7)
         return 1;
 
     pixel_set (&bomb->pos, PIX_BOMB);
-    
+
     return 0;
 }
 
@@ -146,7 +146,7 @@ bomb_create (void)
 
         if (bomb->active)
             continue;
-            
+
         bomb->pos = tossing->player;
         bomb->active = 1;
         bomb->direction = 1;
@@ -167,7 +167,7 @@ bomb_create_down (int8_t pos_x)
 
         if (bomb->active)
             continue;
-            
+
         bomb->pos.x = pos_x;
         bomb->pos.y = -1;
         bomb->active = 1;
@@ -209,7 +209,7 @@ bombs_move ()
 				bomb_kill (bomb);
 			}
      }
-    
+
 }
 }
 
@@ -218,20 +218,20 @@ bool tossing_update (int8_t DUMMY)
 {
 	int8_t pos_x = -1;
     if (DUMMY >= 0 && DUMMY <= 4) {
-		
+
 		pos_x = 4-DUMMY;
-		bomb_create_down(pos_x);	
+		bomb_create_down(pos_x);
 	}
 	if (DUMMY == 5) {
 		tossing->active = 0;
 	}
-	
+
     /* Allow playing with the gun even if game inactive.  */
     bombs_move ();
     if (blow_up_chance() && tossing->player.turn == 1) {
 		tossing->active = 0;
 	}
-    
+
     if (!tossing->active)
         return 0;
     return 1;
@@ -276,7 +276,7 @@ tossing_start (uint8_t ME)
     int8_t j;
 
     tossing->bomb.move_clock = 0;
-    
+
     for (i = 0; i < tossing->bomb.num; i++)
     {
         obj_t *bomb = &tossing->bomb.array[i];
@@ -310,23 +310,18 @@ tossing_start (uint8_t ME)
 
 
 
-bool blow_up_chance(void) 
-{	
+bool blow_up_chance(void)
+{
 	tossing->blow_up_clock++;
     if (tossing->blow_up_clock < tossing->blow_up_period)
         return 0;
     tossing->blow_up_clock = 0;
-    
-    
-	uint8_t chance;	
+
+
+	uint8_t chance;
 	chance = rand () % 200 + 1;
 	if (chance == 1) {
 		return 1;
 	}
 	return 0;
 }
-	
-	
-	
-
-
