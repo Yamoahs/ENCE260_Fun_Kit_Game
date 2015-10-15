@@ -2,13 +2,14 @@
     @author M. P. Hayes, UCECE
     @date   13 March 2005
     @brief  Combined software PWM and flashing module.  Use at your peril!
+    @note   Using the flasher.c file to flash patterners for the Hot Potato Game
 */
 #ifndef FLASHER_H
 #define FLASHER_H
 
 #include "system.h"
 
-/* This parameter is for internal use only.  It's purpose is to 
+/* This parameter is for internal use only.  It's purpose is to
    reduce the chances of flasher_period and flasher_duty overflow.
    It could possibly be made an additional parameter for flasher_pattern_t
    and calculated by FLASHER_PATTERN.  */
@@ -22,7 +23,7 @@
    FLASHES (integer)       - how many flashes per flash pattern
    PERIOD (s)              - how often the flash pattern repeats
 */
-   
+
 #define FLASHER_PATTERN(POLL_RATE, MOD_FREQ, MOD_DUTY, FLASHER_PERIOD,  \
                           FLASHER_DUTY, FLASHES, PERIOD)                \
     (POLL_RATE) / (double)(MOD_FREQ) + 0.5,                             \

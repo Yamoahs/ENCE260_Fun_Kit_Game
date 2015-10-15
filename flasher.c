@@ -1,7 +1,8 @@
 /** @file   flasher.c
-    @author M. P. Hayes, UCECE
+    @author M. P. Hayes, UCECE (
     @date   13 March 2005
-    @brief 
+    @brief
+    @note   Using the flasher.c file to flash patterners for the Hot Potato Game
 */
 
 #include "flasher.h"
@@ -61,12 +62,12 @@ flasher_update (flasher_t flasher)
         {
             flasher->flasher_prescale = 0;
             flasher->flasher_count++;
-            
+
             if (flasher->flasher_count >= flasher->pattern->flasher_period)
             {
                 flasher->flasher_count = 0;
                 flasher->flashes_count++;
-                
+
                 if (!flasher->pattern->period)
                 {
                     /* One shot mode.  */

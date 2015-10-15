@@ -1,3 +1,10 @@
+/** @file   flasher.c
+    @author Ariel Yap
+    @date   14 October 2015
+    @brief  Object file which define the pototo
+    @note
+*/
+
 #include <stdlib.h>
 #include "objects.h"
 #include "ir_serial.h"
@@ -25,29 +32,26 @@ static tossing_t data;
 static tossing_t * const tossing = &data;
 
 
-
-void
-bomb_speed_set (uint8_t bomb_speed)
+//Function defines the Potato bomb speed
+void bomb_speed_set (uint8_t bomb_speed)
 {
     tossing->bomb.move_period = tossing->poll_rate / bomb_speed;
 }
-
-void
-blow_up_speed_set (uint8_t blow_up_speed)
+//Function defines the max speed of the Potato Bomb.
+void blow_up_speed_set (uint8_t blow_up_speed)
 {
     tossing->blow_up_period = tossing->poll_rate / blow_up_speed;
 }
 
-void
-bomb_num_set (uint8_t bomb_num)
+//Function sets the number of Potato Bombs
+void bomb_num_set (uint8_t bomb_num)
 {
     tossing->bomb.num = min(bomb_num, BOMB_MAX);
 }
 
 
-
-void
-tossing_init (uint16_t poll_rate,
+//Function Defines when the Potato Bomb has been thrown
+void tossing_init (uint16_t poll_rate,
              uint8_t x_size, uint8_t y_size,
              void (*display_handler) (void *data, uint8_t row, uint8_t col,
                                       pix_t type),
@@ -65,13 +69,14 @@ tossing_init (uint16_t poll_rate,
     bomb_speed_set (BOMB_SPEED_DEFAULT);
     blow_up_speed_set (CHANCE_SPEED_DEFAULT);
 }
-
-static void
-pixel_set (pos_t *pos, pix_t type)
+//Function defines the pixels to turn on when Potato Bomb has been thrown
+static void pixel_set (pos_t *pos, pix_t type)
 {
     tossing->display_hook (tossing->display_data, pos->x, pos->y, type);
 }
 
+/*Function defines the players single direction movement. Movement is
+wrapp-around */
 static void player_move (int8_t inc)
 {
     int8_t player_x;
@@ -134,9 +139,8 @@ static bool bomb_move_down (obj_t *bomb)
     return 0;
 }
 
-
-static void
-bomb_create (void)
+//Function Initialises the Potato bomb
+static void bomb_create (void)
 {
     int8_t i;
 
@@ -156,8 +160,8 @@ bomb_create (void)
     /* If we get to here then we already have too many shells.  */
 }
 
-static void
-bomb_create_down (int8_t pos_x)
+//Function Creates the falling bomb display
+static void bomb_create_down (int8_t pos_x)
 {
     int8_t i;
 
@@ -178,8 +182,9 @@ bomb_create_down (int8_t pos_x)
     /* If we get to here then we already have too many shells.  */
 }
 
-static void
-bomb_kill (obj_t *bomb)
+/* Function removes the Potato Bomb of the Display. Usefully when the Potato
+Bomb has either been caught or has left the Display of the thrower. */
+static void bomb_kill (obj_t *bomb)
 {
     bomb->active = 0;
 }
@@ -193,7 +198,6 @@ bombs_move (void)
         return;
     tossing->bomb.move_clock = 0;
 
-    /* Shells move until they hit an alien or move off the display.  */
 
         obj_t *bomb = &tossing->bomb.array[0];
 
@@ -238,24 +242,21 @@ bool tossing_update (int8_t DUMMY)
 }
 
 /* Move the gun position to the right wrapping back around on left.  */
-void
-player_move_right (void)
+void player_move_right (void)
 {
     player_move (PLAYER_INC);
 }
 
 
 /* Move the gun position to the left wrapping back around on right.  */
-void
-player_move_left (void)
+void player_move_left (void)
 {
     player_move (-PLAYER_INC);
 }
 
 
 /* Fire the gun.  */
-void
-player_fire (void)
+void player_fire (void)
 {
 	if (tossing->player.turn == 1) {
     bomb_create ();
@@ -269,8 +270,7 @@ player_fire (void)
 }
 
 /* Start a new game.  */
-void
-tossing_start (uint8_t ME)
+void tossing_start (uint8_t ME)
 {
     int8_t i;
     int8_t j;
@@ -309,7 +309,8 @@ tossing_start (uint8_t ME)
 }
 
 
-
+/* Function implements the random timer for how long a player can hold the
+Potato Bomb before firing without firing */
 bool blow_up_chance(void)
 {
 	tossing->blow_up_clock++;

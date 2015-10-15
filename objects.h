@@ -1,3 +1,9 @@
+/** @file   flasher.c
+    @author Ariel Yap
+    @date   14 October 2015
+    @brief  Object file which define the pototo
+    @note
+*/
 
 #ifndef BULLET_H
 #define BULLET_H
@@ -32,7 +38,7 @@ typedef struct
 {
     uint8_t bomb_tossed;
     uint8_t bomb_caught;
-    
+
 } stats_t;
 
 typedef struct
@@ -51,18 +57,17 @@ typedef struct
     bool active;
 } tossing_t;
 
-void 
-bomb_speed_set (uint8_t bomb_speed);
+//Function defines the Potato bomb speed
+void bomb_speed_set (uint8_t bomb_speed);
 
-void
-bomb_num_set (uint8_t bomb_num);
+//Function sets the number of Potato Bombs
+void bomb_num_set (uint8_t bomb_num);
 
-void
-blow_up_speed_set (uint8_t blow_up_speed);
+//Function defines the max speed of the Potato Bomb.
+void blow_up_speed_set (uint8_t blow_up_speed);
 
-
-void
-tossing_init (uint16_t poll_rate,
+//Function Defines when the Potato Bomb has been thrown
+void tossing_init (uint16_t poll_rate,
              uint8_t x_size, uint8_t y_size,
              void (*display_handler) (void *data, uint8_t row, uint8_t col,
                                       pix_t type),
@@ -73,25 +78,22 @@ tossing_init (uint16_t poll_rate,
 bool tossing_update (int8_t DUMMY);
 
 /* Move the gun position to the right wrapping back around on left.  */
-void
-player_move_right (void);
+void player_move_right (void);
 
 /* Move the gun position to the left wrapping back around on right.  */
-void
-player_move_left (void);
+void player_move_left (void);
 
 
 /* Fire the gun.  */
-void
-player_fire (void);
+void player_fire (void);
 
 /* Start a new game.  */
-void
-tossing_start (uint8_t ME);
+void tossing_start (uint8_t ME);
 
-uint8_t
-bomb_tossed_get (void);
 
+
+
+/* Function implements the random timer for how long a player can hold the
+Potato Bomb before firing without firing */
 bool blow_up_chance(void);
 #endif
-
