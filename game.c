@@ -23,18 +23,8 @@
 #include "navswitch.h"
 #include "led.h"
 #include "timer.h"
+#include "score_display.h"
 
-
-
-
-void score_display (char character)
-{
-    char buffer[2];
-    buffer[0] = character;
-    buffer[1] = '\0';
-    tinygl_text_mode_set (TINYGL_TEXT_MODE_STEP);
-    tinygl_text (buffer);
-}
 
 
 
