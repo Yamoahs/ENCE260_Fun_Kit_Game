@@ -188,15 +188,16 @@ int main (void)
                 
                 
             case STATE_INIT:
-                tinygl_text ("HOT POTATO");
+                tinygl_text ("HOT POTATO   ");
                 state = STATE_DECIDE;
                 break;
                 
             case STATE_OVER:
+				tinygl_clear ();
                 if (ME == 0) {
-					tinygl_text ("LOSER!");
+					tinygl_text (":(  ");
 					} else if (OPPONENT == 0) {
-						tinygl_text ("WINNER!");
+						tinygl_text ("WIN   ");
 					}
                     state = STATE_DECIDE;
                 /* Fall through.  */
@@ -237,7 +238,7 @@ int main (void)
 					ME = 1;
 					OPPONENT = 2;
 					tinygl_clear ();
-					tinygl_text("P1");
+					tinygl_text("P1   ");
 					break;
                 default:
                     break;
@@ -252,7 +253,7 @@ int main (void)
 					ME = 2;
 					OPPONENT = 1;
 					tinygl_clear ();
-					tinygl_text("P2");
+					tinygl_text("P2   ");
 					break;
                 default:
                     break;
@@ -304,11 +305,11 @@ int main (void)
 					else {
 						if (ME == 1) {
 							tinygl_clear ();
-							tinygl_text("YOU ARE P1");
+							tinygl_text("YOU ARE P1   ");
 						}
 						else if (ME == 2) {
 							tinygl_clear ();
-							tinygl_text("YOU ARE P2");
+							tinygl_text("YOU ARE P2   ");
 						}
 						state = STATE_WAIT;
 					}
@@ -351,14 +352,14 @@ int main (void)
 						OPPONENT = 2;
 						ir_serial_transmit(3);
 						tinygl_clear ();
-						tinygl_text("YOU ARE P1");
+						tinygl_text("YOU ARE P1   ");
 						state = STATE_READY;
 					}
 					if (ME == 2) {
 						OPPONENT = 1;
 						ir_serial_transmit(3);
 						tinygl_clear ();
-						tinygl_text("YOU ARE P2");
+						tinygl_text("YOU ARE P2   ");
 						state= STATE_READY;
 						
 				}
