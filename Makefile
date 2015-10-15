@@ -85,7 +85,6 @@ score_display.o: score_display.c score_display.h ../../drivers/avr/system.h ../.
 
 
 
-
 # Link: create output file (executable) from object files.
 game.out: game.o ir_uart.o ir_serial.o flasher.o ir.o prescale.o timer0.o usart1.o objects.o eeprom.o pio.o system.o timer.o display.o led.o ledmat.o navswitch.o font.o pacer.o tinygl.o uint8toa.o score_display.o
 	$(CC) $(CFLAGS) $^ -o $@ -lm

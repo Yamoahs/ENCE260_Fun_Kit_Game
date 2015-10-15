@@ -40,30 +40,33 @@ enum {BUTTON_HOLD_PERIOD = 1};
 /** Define flasher modes.  */
 static flasher_pattern_t flasher_patterns[] =
 {
-    /** POLL_RATE, MOD_FREQ, MOD_DUTY, FLASHER_PERIOD,
-       FLASHER_DUTY, FLASHES, PERIOD.  */
-    {FLASHER_PATTERN (FLASHER_UPDATE_RATE, 100, 100, 0.4, 100, 1, 0.4)},
-    {FLASHER_PATTERN (FLASHER_UPDATE_RATE, 100, 100, 0.4, 100, 1, 0.4)},
-    {FLASHER_PATTERN (FLASHER_UPDATE_RATE, 200, 100, 0.1, 50, 1, 0.1)},
+  /** POLL_RATE, MOD_FREQ, MOD_DUTY, FLASHER_PERIOD,
+     FLASHER_DUTY, FLASHES, PERIOD.  */
+  {FLASHER_PATTERN (FLASHER_UPDATE_RATE, 100, 100, 0.4, 100, 1, 0.4)},
+  {FLASHER_PATTERN (FLASHER_UPDATE_RATE, 100, 100, 0.4, 100, 1, 0.4)},
+  {FLASHER_PATTERN (FLASHER_UPDATE_RATE, 200, 100, 0.1, 50, 1, 0.1)},
 };
 
+/* Defining the typedef with a alias flash_mode_t */
 typedef enum {FLASH_MODE_PLAYER, FLASH_MODE_BOMB,
 			  FLASH_MODE_NUM} flash_mode_t;
 
 
+/* Defining the typedef with a alias state_t */
 typedef enum {STATE_DECIDE, STATE_WAIT, STATE_INIT, STATE_INVITE, STATE_START,
               STATE_PLAYING, STATE_OVER,
               STATE_READY} state_t;
 
+
+/* initialising  game_data_t struct*/
 typedef struct
 {
-    uint8_t games;
+  uint8_t games;
 } game_data_t;
 
 
-/** Draw pixel on display.  */
-static void
-display_handler (void *data, uint8_t col, uint8_t row, pix_t type)
+/* Draw pixel on display.  */
+static void display_handler (void *data, uint8_t col, uint8_t row, pix_t type)
 {
     uint8_t *display = data;
     uint8_t pixel;
@@ -72,8 +75,8 @@ display_handler (void *data, uint8_t col, uint8_t row, pix_t type)
     display[pixel] = type;
 }
 
-static void
-game_start (game_data_t *data, uint8_t ME)
+/* Initialisng Game Start */
+static void game_start (game_data_t *data, uint8_t ME)
 {
     tinygl_clear ();
     data->games++;
@@ -82,32 +85,39 @@ game_start (game_data_t *data, uint8_t ME)
 }
 
 
-
-
 int main (void)
 {
-	uint8_t navswitch_ticks;
-  uint8_t game_ticks = 0;
-  uint8_t ir_ticks = 0;
-  uint8_t navswitch_down_count = 0;
   state_t state = STATE_INIT;
   flasher_t flashers[PIX_TYPE_NUM];
   uint8_t flasher_state[PIX_TYPE_NUM];
   flasher_obj_t flashers_info[PIX_TYPE_NUM];
   uint8_t display[TINYGL_WIDTH * TINYGL_HEIGHT];
+
+	uint8_t navswitch_ticks = 0;
+  uint8_t game_ticks = 0;
+  uint8_t ir_ticks = 0;
+  uint8_t navswitch_down_count = 0;
   uint8_t i = 0;
   uint8_t j = 0;
   uint8_t ME = 0;
-  char SCORE = '0';
   uint8_t OPPONENT = 0;
   uint8_t RECEIVED = 0;
   uint8_t GAME_INVITE = 0;
   uint8_t GAME_ACCEPT = 0;
   uint8_t DUMMY = -2;
+  char SCORE = '0';
   game_data_t data;
 
-
+  /* Initialising Built-in Functions */
   system_init ();
+  navswitch_init();
+  ir_serial_init();
+
+  tinygl_init (LOOP_RATE);
+  tinygl_font_set (&font3x5_1);
+  tinygl_text_speed_set (MESSAGE_RATE);
+  tinygl_text_mode_set (TINYGL_TEXT_MODE_SCROLL);
+  tinygl_text_dir_set (TINYGL_TEXT_DIR_ROTATE);
 
 
   eeprom_read (0, &data, sizeof (data));
@@ -127,14 +137,6 @@ int main (void)
   flasher_pattern_set (flashers[PIX_BOMB],
                        &flasher_patterns[FLASH_MODE_BOMB]);
 
-  tinygl_init (LOOP_RATE);
-  tinygl_font_set (&font3x5_1);
-  tinygl_text_speed_set (MESSAGE_RATE);
-  tinygl_text_mode_set (TINYGL_TEXT_MODE_SCROLL);
-  tinygl_text_dir_set (TINYGL_TEXT_DIR_ROTATE);
-
-  navswitch_init();
-  ir_serial_init();
 
   tossing_init (GAME_UPDATE_RATE, TINYGL_WIDTH, TINYGL_HEIGHT,
                display_handler, display);
