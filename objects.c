@@ -186,7 +186,7 @@ bomb_kill (obj_t *bomb)
 
 
 static void
-bombs_move ()
+bombs_move (void)
 {
     tossing->bomb.move_clock++;
     if (tossing->bomb.move_clock < tossing->bomb.move_period)
