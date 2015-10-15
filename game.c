@@ -299,17 +299,17 @@ int main (void)
                     state = STATE_INVITE;
                     break;
                 case STATE_DECIDE:
-					if (ME == 0) {
+					if (ME == 0 || OPPONENT == 0) {
 						break;
 					}
 					else {
 						if (ME == 1) {
 							tinygl_clear ();
-							tinygl_text("YOU ARE P1   ");
+							tinygl_text("YOU = P1   ");
 						}
 						else if (ME == 2) {
 							tinygl_clear ();
-							tinygl_text("YOU ARE P2   ");
+							tinygl_text("YOU = P2   ");
 						}
 						state = STATE_WAIT;
 					}
@@ -352,14 +352,14 @@ int main (void)
 						OPPONENT = 2;
 						ir_serial_transmit(3);
 						tinygl_clear ();
-						tinygl_text("YOU ARE P1   ");
+						tinygl_text("YOU = P1   ");
 						state = STATE_READY;
 					}
 					if (ME == 2) {
 						OPPONENT = 1;
 						ir_serial_transmit(3);
 						tinygl_clear ();
-						tinygl_text("YOU ARE P2   ");
+						tinygl_text("YOU = P2   ");
 						state= STATE_READY;
 						
 				}
