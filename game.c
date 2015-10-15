@@ -1,3 +1,12 @@
+/** @file   game.c
+    @author Ariel Yap & Samuel Yamoah. (Program structure based on Space 9
+    written by M. P. Hayes, UCECE)
+    @date   5 Oct 2015
+    @brief  Main Game file (Hot Potato)
+    @note
+*/
+
+
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,12 +27,12 @@
 
 
 
-void display_character (char character)
+void score_display (char character)
 {
     char buffer[2];
     buffer[0] = character;
     buffer[1] = '\0';
-    tinygl_text_mode_set (TINYGL_TEXT_MODE_STEP); 
+    tinygl_text_mode_set (TINYGL_TEXT_MODE_STEP);
     tinygl_text (buffer);
 }
 
@@ -57,15 +66,15 @@ typedef enum {FLASH_MODE_PLAYER, FLASH_MODE_BOMB,
 
 
 typedef enum {STATE_DECIDE, STATE_WAIT, STATE_INIT, STATE_INVITE, STATE_START,
-              STATE_PLAYING, STATE_OVER, 
+              STATE_PLAYING, STATE_OVER,
               STATE_READY} state_t;
-              
+
 typedef struct
 {
     uint8_t games;
 } game_data_t;
 
-            
+
 /** Draw pixel on display.  */
 static void
 display_handler (void *data, uint8_t col, uint8_t row, pix_t type)
@@ -111,13 +120,13 @@ int main (void)
     uint8_t GAME_ACCEPT = 0;
     uint8_t DUMMY = -2;
     game_data_t data;
-    
-	
+
+
     system_init ();
-    
-    
+
+
     eeprom_read (0, &data, sizeof (data));
-    
+
     for (i = 0; i < ARRAY_SIZE (flashers); i++)
     {
         flashers[i] = flasher_init (&flashers_info[i]);
@@ -132,17 +141,17 @@ int main (void)
                          &flasher_patterns[FLASH_MODE_PLAYER]);
     flasher_pattern_set (flashers[PIX_BOMB],
                          &flasher_patterns[FLASH_MODE_BOMB]);
-                         
+
     tinygl_init (LOOP_RATE);
     tinygl_font_set (&font3x5_1);
     tinygl_text_speed_set (MESSAGE_RATE);
 	tinygl_text_mode_set (TINYGL_TEXT_MODE_SCROLL);
 	tinygl_text_dir_set (TINYGL_TEXT_DIR_ROTATE);
-    
+
     navswitch_init();
     ir_serial_init();
 
-    tossing_init (GAME_UPDATE_RATE, TINYGL_WIDTH, TINYGL_HEIGHT, 
+    tossing_init (GAME_UPDATE_RATE, TINYGL_WIDTH, TINYGL_HEIGHT,
                  display_handler, display);
 
     navswitch_ticks = 0;
@@ -152,12 +161,12 @@ int main (void)
     navswitch_down_count = 0;
 
     pacer_init (LOOP_RATE);
-    
+
 
     while (1)
     {
 		pacer_wait ();
-		
+
 		if (state == STATE_PLAYING)
         {
             uint8_t *src;
@@ -165,7 +174,7 @@ int main (void)
             /* Update flasher states.  NB, the first flasher is always off.  */
             for (i = 1; i < ARRAY_SIZE (flashers); i++)
                 flasher_state[i] = flasher_update (flashers[i]);
-            
+
             /* Update display.  */
             src = display;
             for (j = 0; j < TINYGL_HEIGHT; j++)
@@ -176,15 +185,15 @@ int main (void)
                     tinygl_draw_point (point, flasher_state[*src++]);
                 }
         }
-        
+
         /* Advance messages and refresh display.  */
         tinygl_update ();
-        
+
         game_ticks++;
         if (game_ticks >= LOOP_RATE / GAME_UPDATE_RATE)
         {
             game_ticks = 0;
-                
+
             switch (state)
             {
             case STATE_PLAYING:
@@ -196,19 +205,19 @@ int main (void)
 					} else {
 						ME = 0;
 					}
-                    game_over_ticks = 0;                    
+                    game_over_ticks = 0;
                     led_set (LED1, 0);
                     state = STATE_OVER;
 				}
 				DUMMY = -2;
 				break;
-                
-                
+
+
             case STATE_INIT:
                 tinygl_text ("HOT POTATO   ");
                 state = STATE_DECIDE;
                 break;
-                
+
             case STATE_OVER:
 				tinygl_clear ();
                 if (ME == 0) {
@@ -222,7 +231,7 @@ int main (void)
 
             default:
                 break;
-                
+
             case STATE_START:
                 /* Turn that bloody blimey space invader off...  */
                 game_start (&data, ME);
@@ -230,8 +239,8 @@ int main (void)
                 break;
             }
         }
-        
-        
+
+
         /* Poll navswitch.  */
         navswitch_ticks++;
         if (navswitch_ticks >= LOOP_RATE / BUTTON_POLL_RATE)
@@ -256,7 +265,7 @@ int main (void)
 					ME = 1;
 					OPPONENT = 2;
 					tinygl_clear ();
-					
+
 					tinygl_text_mode_set (TINYGL_TEXT_MODE_SCROLL);
 					tinygl_text("P1   ");
 					break;
@@ -264,7 +273,7 @@ int main (void)
                     break;
                 }
             }
-            
+
             if (navswitch_push_event_p (NAVSWITCH_SOUTH))
             {
                 switch (state)
@@ -273,7 +282,7 @@ int main (void)
 					ME = 2;
 					OPPONENT = 1;
 					tinygl_clear ();
-					
+
 					tinygl_text_mode_set (TINYGL_TEXT_MODE_SCROLL);
 					tinygl_text("P2   ");
 					break;
@@ -281,7 +290,7 @@ int main (void)
                     break;
                 }
             }
-            
+
             if (navswitch_push_event_p (NAVSWITCH_EAST))
             {
                 switch (state)
@@ -307,7 +316,7 @@ int main (void)
                     break;
                 case STATE_DECIDE:
 					tinygl_clear ();
-					display_character (SCORE);
+					score_display (SCORE);
 					break;
 				default:
                     break;
@@ -341,7 +350,7 @@ int main (void)
 						state = STATE_WAIT;
 					}
 					break;
-						
+
                 case STATE_PLAYING:
                     player_fire ();
                     break;
@@ -350,19 +359,19 @@ int main (void)
                 }
             }
         }
-        
+
         ir_ticks++;
         if (ir_ticks >= LOOP_RATE / IR_UPDATE_RATE)
         {
             ir_ticks = 0;
-                
+
             switch (state)
             {
             case STATE_PLAYING:
 				if (ir_serial_receive (&DUMMY) == IR_SERIAL_OK) {
 					}
 					break;
-          
+
             case STATE_WAIT:
 				if (ir_serial_receive (&RECEIVED) == IR_SERIAL_OK) {
 					if (RECEIVED == 3) {
@@ -372,7 +381,7 @@ int main (void)
 			DUMMY = 6;
 					ir_serial_transmit(OPPONENT);
 				break;
-			
+
 			case STATE_DECIDE:
 				if (ir_serial_receive (&ME) == IR_SERIAL_OK) {
 					if (ME == 1) {
@@ -390,40 +399,40 @@ int main (void)
 						tinygl_clear ();
 						tinygl_text("YOU = P2   ");
 						state= STATE_READY;
-						
+
 				}
 			}
 				break;
 			case STATE_INVITE:
 				if (ir_serial_receive (&GAME_ACCEPT) == IR_SERIAL_OK) {
-					if (GAME_ACCEPT == 5) {	
+					if (GAME_ACCEPT == 5) {
 					state = STATE_START;
 					}
 				}
 				ir_serial_transmit(GAME_INVITE);
 				break;
-				
-				
+
+
 			case STATE_READY:
 				if (ir_serial_receive (&GAME_INVITE) == IR_SERIAL_OK) {
 					if (GAME_INVITE == 7) {
 						tinygl_clear ();
 					GAME_ACCEPT = 5;
-					ir_serial_transmit(GAME_ACCEPT);	
+					ir_serial_transmit(GAME_ACCEPT);
 					state = STATE_START;
 				}
 			}
 				break;
             default:
                 break;
-                            
+
             case STATE_OVER:
 				ir_serial_transmit(5);
 			}
-		
+
         }
-        
-        
-        
+
+
+
     }
 }
