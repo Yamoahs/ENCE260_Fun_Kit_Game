@@ -16,6 +16,22 @@
 #include "timer.h"
 
 
+
+
+void display_character (char character)
+{
+    char buffer[2];
+    buffer[0] = character;
+    buffer[1] = '\0';
+    tinygl_text_mode_set (TINYGL_TEXT_MODE_STEP); 
+    tinygl_text (buffer);
+}
+
+
+
+
+
+
 enum {LOOP_RATE = 500};
 enum {FLASHER_UPDATE_RATE = LOOP_RATE};
 enum {BUTTON_POLL_RATE = 100};
@@ -88,6 +104,7 @@ int main (void)
     uint8_t i;
     uint8_t j;
     uint8_t ME = 0;
+    char SCORE = '0';
     uint8_t OPPONENT = 0;
     uint8_t RECEIVED = 0;
     uint8_t GAME_INVITE = 0;
@@ -198,6 +215,7 @@ int main (void)
 					tinygl_text (":(  ");
 					} else if (OPPONENT == 0) {
 						tinygl_text ("WIN   ");
+						SCORE++;
 					}
                     state = STATE_DECIDE;
                 /* Fall through.  */
@@ -238,6 +256,8 @@ int main (void)
 					ME = 1;
 					OPPONENT = 2;
 					tinygl_clear ();
+					
+					tinygl_text_mode_set (TINYGL_TEXT_MODE_SCROLL);
 					tinygl_text("P1   ");
 					break;
                 default:
@@ -253,6 +273,8 @@ int main (void)
 					ME = 2;
 					OPPONENT = 1;
 					tinygl_clear ();
+					
+					tinygl_text_mode_set (TINYGL_TEXT_MODE_SCROLL);
 					tinygl_text("P2   ");
 					break;
                 default:
@@ -283,6 +305,10 @@ int main (void)
                 case STATE_PLAYING:
                     player_move_left ();
                     break;
+                case STATE_DECIDE:
+					tinygl_clear ();
+					display_character (SCORE);
+					break;
 				default:
                     break;
                 }
@@ -303,6 +329,7 @@ int main (void)
 						break;
 					}
 					else {
+						tinygl_text_mode_set (TINYGL_TEXT_MODE_SCROLL);
 						if (ME == 1) {
 							tinygl_clear ();
 							tinygl_text("YOU = P1   ");
@@ -350,6 +377,7 @@ int main (void)
 				if (ir_serial_receive (&ME) == IR_SERIAL_OK) {
 					if (ME == 1) {
 						OPPONENT = 2;
+						tinygl_text_mode_set (TINYGL_TEXT_MODE_SCROLL);
 						ir_serial_transmit(3);
 						tinygl_clear ();
 						tinygl_text("YOU = P1   ");
@@ -357,6 +385,7 @@ int main (void)
 					}
 					if (ME == 2) {
 						OPPONENT = 1;
+						tinygl_text_mode_set (TINYGL_TEXT_MODE_SCROLL);
 						ir_serial_transmit(3);
 						tinygl_clear ();
 						tinygl_text("YOU = P2   ");
